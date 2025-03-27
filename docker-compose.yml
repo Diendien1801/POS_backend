@@ -5,47 +5,75 @@ services:
     restart: always
     environment:
       # Đọc từ file .env
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB} # myshop
+      POSTGRES_USER: ${POSTGRES_USER} # postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # 1234
+      # Truyền biến role vào container DB để script init sử dụng
+      PGRST_DB_ANON_ROLE: ${PGRST_DB_ANON_ROLE:-api_anon_user} # Thêm dòng này
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Mount script khởi tạo vào thư mục init của postgres
+      - ./init-api.sql:/docker-entrypoint-initdb.d/init-api.sql # Thêm dòng này
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"] # Sửa lại để dùng biến môi trường nếu có
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  app:
+  app: # Giữ nguyên cấu hình service app
     build: .
     depends_on:
       db:
         condition: service_healthy
     environment:
-      # Đặt trực tiếp tên service của DB làm host cho app
-      DB_HOST: ${POSTGRES_HOST}
-      # Đọc các biến còn lại từ file .env
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: 5432 # Hoặc ${POSTGRES_PORT:-5432} nếu bạn định nghĩa trong .env
-      PORT: ${PORT:-3001} # Đọc PORT từ .env, mặc định 3001 nếu không có
-      NODE_ENV: development # Thường nên đặt rõ môi trường
-      JWT_SECRET: ${JWT_SECRET} # Đọc JWT_SECRET từ .env
+      DB_HOST: ${POSTGRES_HOST} # db
+      POSTGRES_DB: ${POSTGRES_DB} # myshop
+      POSTGRES_USER: ${POSTGRES_USER} # postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # 1234
+      POSTGRES_PORT: 5432
+      PORT: ${PORT:-3001} # Đọc từ .env -> 3001
+      NODE_ENV: development
+      JWT_SECRET: ${JWT_SECRET} # mat_khau_sieu_cap
     ports:
-      # Ánh xạ cổng host (ví dụ 3001) tới cổng container (được đọc từ PORT, mặc định 3001)
-      - "${PORT:-3001}:${PORT:-3001}"
-    # Healthcheck nên dùng cổng ${PORT}
+      # Ánh xạ cổng host 3001 tới cổng container 3001 (theo .env)
+      - "${PORT:-3001}:${PORT:-3001}" # Sẽ là "3001:3001"
     healthcheck:
-      test: curl --fail http://localhost:${PORT:-3001} || exit 1 # Dùng curl cho đơn giản
-      # Hoặc giữ lệnh node của bạn nhưng dùng PORT
-      # test: node -e "require('http').get('http://localhost:${process.env.PORT || 3001}', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"
+      test: curl --fail http://localhost:${PORT:-3001} || exit 1 # Dùng port 3001
       interval: 30s
-      timeout: 10s # Cho timeout dài hơn chút
+      timeout: 10s
       retries: 3
-      start_period: 10s # Cho app thêm thời gian khởi động + migrate
+      start_period: 10s
+
+  # --- THÊM SERVICE POSTGREST ---
+  postgrest:
+    image: postgrest/postgrest:v12.0.2 # Hoặc version mới hơn
+    restart: always
+    ports:
+      # Map port 3000 của host vào port ${PGRST_SERVER_PORT} (3000) của container postgrest
+      - "3000:${PGRST_SERVER_PORT:-3000}"
+    environment:
+      # Kết nối DB tới service 'db' sử dụng thông tin từ .env
+      PGRST_DB_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Role ẩn danh đọc từ .env (api_anon_user)
+      PGRST_DB_ANON_ROLE: ${PGRST_DB_ANON_ROLE:-api_anon_user}
+      PGRST_DB_SCHEMAS: ${PGRST_DB_SCHEMAS:-public}
+      # JWT Secret đọc từ .env (mat_khau_sieu_cap)
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_JWT_SECRET_IS_BASE64: ${PGRST_JWT_SECRET_IS_BASE64:-false}
+      # Port PostgREST chạy bên trong container đọc từ .env (3000)
+      PGRST_SERVER_PORT: ${PGRST_SERVER_PORT:-3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PGRST_SERVER_PORT:-3000}/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  # --- KẾT THÚC SERVICE POSTGREST ---
 
 volumes:
   postgres_data:
