@@ -1,13 +1,71 @@
 # GitHub Codespaces ♥️ Express
 
-Welcome to your shiny new Codespace running Express! We've got everything fired up and running for you to explore Express.
+# POS Backend System
 
-You've got a blank canvas to work on from a git perspective as well. There's a single initial commit with the what you're seeing right now - where you go from here is up to you!
+A Point of Sale backend system built with Express.js, PostgreSQL, and PostgREST.
 
-Everything you do here is contained within this one codespace. There is no repository on GitHub yet. If and when you’re ready you can click "Publish Branch" and we’ll create your repository and push up your project. If you were just exploring then and have no further need for this code then you can simply delete your codespace and it's gone forever.
+## Prerequisites
 
-To run this application:
+- Docker
+- Docker Compose
 
+## Quick Start with Docker
+
+1. Clone the repository
+
+2. Create .env file with template below
+
+3. Start all services using Docker Compose:
+```bash
+docker compose up --build -d
 ```
-npm start
+
+This will start:
+- PostgreSQL database (port 5432)
+- Express.js backend (port 3001)
+- PostgREST API (port 3000)
+
+To check the status of your containers:
+```bash
+docker compose ps
+```
+
+To view logs:
+```bash
+docker compose logs -f
+```
+
+## Services
+
+Once running, the following services are available:
+
+- REST API: http://localhost:3001
+- PostgREST API: http://localhost:3000
+- PostgreSQL Database: localhost:5432
+
+## Environment Variables
+
+Key environment variables in `.env`:
+
+```plaintext
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+JWT_SECRET=
+PORT=
+PGRST_DB_ANON_ROLE=
+PGRST_SERVER_PORT=
+```
+
+## Stopping the Application
+
+To stop all services:
+```bash
+docker compose down
+```
+
+To stop and remove all data (including database volume):
+```bash
+docker compose down -v
 ```
