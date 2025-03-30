@@ -15,11 +15,8 @@ EXCEPTION WHEN duplicate_object THEN RAISE NOTICE 'Role "api_anon_user" already 
 END $$;
 
 -- ***** PHẦN QUAN TRỌNG *****
--- Cấp quyền mong muốn (ví dụ: SELECT) trên TẤT CẢ các bảng HIỆN CÓ trong schema public
--- CẢNH BÁO BẢO MẬT: Chỉ cấp quyền thực sự cần thiết. Cấp INSERT/UPDATE/DELETE cho anon rất nguy hiểm.
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO api_anon_user;
--- Nếu bạn thực sự muốn cấp quyền ghi/xóa (KHÔNG KHUYẾN NGHỊ):
--- GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO api_anon_user;
+-- Cấp quyền mong muốn trên TẤT CẢ các bảng HIỆN CÓ trong schema public dev environment
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO api_anon_user;
 
 -- Cấp quyền cho TẤT CẢ các sequence HIỆN CÓ (cần thiết nếu dùng SERIAL/IDENTITY và muốn INSERT)
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO api_anon_user;
@@ -30,10 +27,7 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO api_anon_user;
 -- Thiết lập quyền MẶC ĐỊNH cho các đối tượng TƯƠNG LAI được tạo bởi user 'postgres'
 -- Điều này đảm bảo các bảng/sequence/function tạo bởi migration SAU NÀY cũng có quyền.
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
-   GRANT SELECT ON TABLES TO api_anon_user;
--- Nếu muốn cấp quyền ghi/xóa mặc định (KHÔNG KHUYẾN NGHỊ):
--- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
---    GRANT INSERT, UPDATE, DELETE ON TABLES TO api_anon_user;
+   GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO api_anon_user;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
    GRANT USAGE, SELECT ON SEQUENCES TO api_anon_user;

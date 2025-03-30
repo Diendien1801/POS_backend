@@ -8,7 +8,7 @@ RUN groupadd -r nodejs && useradd -r -g nodejs nodeuser
 
 # Install dependencies first (better caching)
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --production
 
 # Copy application code
 COPY . .
