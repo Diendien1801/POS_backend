@@ -17,10 +17,13 @@ const customerRouter = require("./routes/customer");
 const manufacturerRouter = require("./routes/manufacturer");
 const productRouter = require("./routes/product");
 const homeRouter = require("./routes/home");
+const accountRouter = require("./routes/account");
 app.use("/api/customers", customerRouter);
 app.use("/api/manufacturers", manufacturerRouter);
 app.use("/api/products", productRouter);
 app.use("/api/home", homeRouter);
+app.use("/api/accounts", accountRouter);
+
 // Add more routes for other entities
 // Example: app.use('/api/manufacturers', require('./routes/manufacturer'));
 
