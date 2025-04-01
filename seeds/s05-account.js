@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Changed from 'bcrypt' to 'bcryptjs'
 
 exports.seed = async function (knex) {
   // Xoá toàn bộ dữ liệu cũ trong bảng Account
