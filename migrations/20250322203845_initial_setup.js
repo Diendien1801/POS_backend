@@ -32,6 +32,7 @@ exports.up = async function(knex) {
             table.string("thongSoVatLy");
             table.string("heDieuHanh");
             table.string("baoMat");
+            table.string("hinhAnh").defaultTo("laptop_default.jpg");
         })
 
         // Bảng Inventory (Kho hàng)
@@ -135,9 +136,12 @@ exports.up = async function(knex) {
             table.date("DOB").notNullable();
             table.string("diaChi");
             table.string("gioiTinh");
+            table.string("sdt").notNullable().unique();
+            table.string("email").notNullable().unique();
             table.decimal("salary", 15, 2);
             table.integer("idAccount").unsigned()
                 .references("idAccount").inTable("Account").onDelete("SET NULL");
+            table.string("hinhAnh").defaultTo("employee_default.jpg");
         })
 
         

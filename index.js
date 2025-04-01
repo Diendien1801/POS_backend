@@ -20,6 +20,9 @@ const homeRouter = require("./routes/home");
 const accountRouter = require("./routes/account");
 const stockImportRouter = require("./routes/stockImport");
 const stockImportDetailRouter = require("./routes/stockImportDetail");
+const orderRouter = require("./routes/order");
+const orderDetailRouter = require("./routes/orderDetail");
+const employeeRouter = require("./routes/employee");
 
 app.use("/api/customers", customerRouter);
 app.use("/api/manufacturers", manufacturerRouter);
@@ -28,6 +31,9 @@ app.use("/api/home", homeRouter);
 app.use("/api/accounts", accountRouter);
 app.use("/api/stock-imports", stockImportRouter);
 app.use("/api/stock-import-details", stockImportDetailRouter);
+app.use("/api/orders", orderRouter);
+app.use("/api/order-details", orderDetailRouter);
+app.use("/api/employees", employeeRouter);
 
 // Add more routes for other entities
 // Example: app.use('/api/manufacturers', require('./routes/manufacturer'));
