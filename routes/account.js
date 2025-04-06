@@ -9,7 +9,7 @@ router.post('/login', accountController.login);
 router.get('/', authorizeRole('admin'), accountController.getAllAccounts);
 
 // ✅ Những route khác
-router.get('/:id', authorizeRole('admin', 'casher'), accountController.getAccountById);
+router.get('/:id', authorizeRole('admin', 'casher', 'warehouse'), accountController.getAccountById);
 router.put('/:id', authorizeRole('admin'), accountController.updateAccount);
 router.delete('/:id', authorizeRole('admin'), accountController.deleteAccount);
 

@@ -224,10 +224,53 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
+
+const getEmployeeByAccount = async (req, res) => {
+  const accountIdFromToken = req.user.sub;
+  const accountIdFromParams = parseInt(req.params.idAccount);
+
+  if (accountIdFromToken !== accountIdFromParams) {
+    return res.status(403).json({
+      success: false,
+      data: null,
+      message: 'Access denied'
+    });
+  }
+
+  try {
+    const employee = await db('Employee')
+      .where({ idAccount: accountIdFromParams })
+      .first();
+
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: 'Employee not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: employee,
+      message: 'Employee retrieved successfully'
+    });
+  } catch (err) {
+    console.error("🔥 EMPLOYEE BY ACCOUNT ERROR:", err);
+    res.status(500).json({
+      success: false,
+      data: null,
+      message: 'Internal server error'
+    });
+  }
+};
+
+
 module.exports = {
   getAllEmployees,
   getEmployeeById,
   createEmployee,
   updateEmployee,
   deleteEmployee,
+  getEmployeeByAccount
 };
