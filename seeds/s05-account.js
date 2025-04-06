@@ -25,25 +25,25 @@ exports.seed = async function (knex) {
       idAccount: 2,
       username: "employee1",
       matKhau: employeePassword,
-      role: "employee"
+      role: "casher"
     },
     {
       idAccount: 3,
       username: "employee2",
       matKhau: employeePassword,
-      role: "employee"
+      role: "casher"
     },
     {
       idAccount: 4,
       username: "employee3",
       matKhau: employeePassword,
-      role: "employee"
+      role: "warehouse"
     },
     {
       idAccount: 5,
       username: "employee4",
       matKhau: employeePassword,
-      role: "employee"
+      role: "warehouse"
     }
   ]);
 };

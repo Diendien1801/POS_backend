@@ -1,4 +1,53 @@
 const db = require('../db');
+const bcrypt = require('bcryptjs'); 
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+
+const login = async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  try {
+    const user = await db('Account').where({ username }).first();
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.matKhau);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      {
+        sub: user.idAccount,
+        username: user.username,
+        role: user.role
+      },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.idAccount,
+        username: user.username,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error("🔥 LOGIN ERROR:", err); // 👈 In lỗi chi tiết
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 
 // Get all accounts
 const getAllAccounts = async (req, res) => {
@@ -121,5 +170,6 @@ module.exports = {
   getAccountById,
   createAccount,
   updateAccount,
-  deleteAccount
+  deleteAccount,
+  login
 };
