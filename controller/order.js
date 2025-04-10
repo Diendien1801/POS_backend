@@ -99,18 +99,19 @@ const createOrder = async (req, res) => {
 
   try {
     const {
-      idCustomer ,
+      idCustomer,
       idEmployee,
       idPromotion,
       trangThai,
       ngayDatHang,
       tongTien,
       hinhThucThanhToan,
+      platform,
       orderDetails,
     } = req.body;
 
     // Kiểm tra đầu vào
-    if ( !trangThai || !ngayDatHang || !hinhThucThanhToan) {
+    if (!trangThai || !ngayDatHang || !hinhThucThanhToan) {
       await trx.rollback();
       return res.status(400).json({
         error: "Vui lòng cung cấp đầy đủ thông tin đơn hàng",
@@ -129,7 +130,6 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // Kiểm tra chi tiết đơn hàng
     for (const [index, detail] of orderDetails.entries()) {
       if (!detail.idLaptop) {
         await trx.rollback();
@@ -151,9 +151,8 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // Gộp các chi tiết đơn hàng trùng idLaptop
+    // Gộp chi tiết
     const groupedDetails = {};
-
     for (const detail of orderDetails) {
       if (groupedDetails[detail.idLaptop]) {
         groupedDetails[detail.idLaptop].soLuong += detail.soLuong;
@@ -169,25 +168,27 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // Tạo đơn hàng
-    const [order] = await trx("Order")
-      .insert({
-        idCustomer,
-        idEmployee,
-        idPromotion,
-        trangThai,
-        ngayDatHang,
-        tongTien,
-        hinhThucThanhToan,
-      })
-      .returning("idOrder");
+    // Lấy idOrder lớn nhất
+    const maxIdResult = await trx("Order").max("idOrder as maxId").first();
+    const newIdOrder = (maxIdResult?.maxId || 0) + 1;
 
-    const orderId = order.idOrder;
+    // Tạo đơn hàng
+    await trx("Order").insert({
+      idOrder: newIdOrder,
+      idCustomer,
+      idEmployee,
+      idPromotion,
+      trangThai,
+      ngayDatHang,
+      tongTien,
+      hinhThucThanhToan,
+      platform: platform || "pos",
+    });
 
     // Tạo chi tiết đơn hàng và cập nhật kho
     for (const detail of Object.values(groupedDetails)) {
       await trx("OrderDetail").insert({
-        idOrder: orderId,
+        idOrder: newIdOrder,
         idLaptop: detail.idLaptop,
         soLuong: detail.soLuong,
         donGia: detail.donGia,
@@ -197,20 +198,18 @@ const createOrder = async (req, res) => {
       await updateInventory(trx, detail.idLaptop, -detail.soLuong);
     }
 
-    // Cập nhật điểm thưởng nếu đơn hoàn thành
+    // Tính điểm
     if (trangThai === "Hoàn thành") {
       const pointsToAdd = Math.floor(tongTien / pointPerCash);
-      await updateCustomerLoyalty(trx, idCustomer, pointsToAdd, orderId);
+      await updateCustomerLoyalty(trx, idCustomer, pointsToAdd, newIdOrder);
     }
 
     await trx.commit();
 
-    
-
     res.status(201).json({
       success: true,
       message: "Tạo đơn hàng thành công",
-      
+      idOrder: newIdOrder,
     });
   } catch (err) {
     await trx.rollback();
@@ -221,6 +220,7 @@ const createOrder = async (req, res) => {
     });
   }
 };
+
 
 // Update order
 const updateOrder = async (req, res) => {

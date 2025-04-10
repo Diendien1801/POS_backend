@@ -147,18 +147,21 @@ exports.up = async function(knex) {
         
         // Bảng Order (Đơn hàng)
         .createTable("Order", (table) => {
-            table.increments("idOrder").primary();
-            table.integer("idCustomer").unsigned()
-                .references("idCustomer").inTable("Customer").onDelete("CASCADE");
-            table.integer("idEmployee").unsigned()
-                .references("idNhanVien").inTable("Employee").onDelete("SET NULL");
-            table.string("trangThai").notNullable();
-            table.date("ngayDatHang").notNullable();
-            table.decimal("tongTien", 15, 2).notNullable();
-            table.string("hinhThucThanhToan").notNullable();
-            table.integer("idPromotion").unsigned()
-                .references("idPromotion").inTable("Promotion").onDelete("SET NULL");
-        })
+    table.increments("idOrder").primary();
+    table.integer("idCustomer").unsigned()
+        .references("idCustomer").inTable("Customer").onDelete("CASCADE");
+    table.integer("idEmployee").unsigned()
+        .references("idNhanVien").inTable("Employee").onDelete("SET NULL");
+    table.string("trangThai").notNullable();
+    table.date("ngayDatHang").notNullable();
+    table.decimal("tongTien", 15, 2).notNullable();
+    table.string("hinhThucThanhToan").notNullable();
+    table.integer("idPromotion").unsigned()
+        .references("idPromotion").inTable("Promotion").onDelete("SET NULL");
+
+    // Thêm cột platform
+    table.enu("platform", ["pos", "web"]).notNullable().defaultTo("pos");
+})
 
         // Bảng OrderDetail (Chi tiết đơn hàng)
         .createTable("OrderDetail", (table) => {
