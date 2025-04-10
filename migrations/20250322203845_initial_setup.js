@@ -148,7 +148,7 @@ exports.up = async function(knex) {
         // Bảng Order (Đơn hàng)
         .createTable("Order", (table) => {
             table.increments("idOrder").primary();
-            table.integer("idCustomer").unsigned().notNullable()
+            table.integer("idCustomer").unsigned()
                 .references("idCustomer").inTable("Customer").onDelete("CASCADE");
             table.integer("idEmployee").unsigned()
                 .references("idNhanVien").inTable("Employee").onDelete("SET NULL");

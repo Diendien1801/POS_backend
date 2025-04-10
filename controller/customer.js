@@ -53,9 +53,9 @@ const createCustomer = async (req, res) => {
   } catch (err) {
     console.error(err);
     
-    if (err.code === '23505') { // Unique constraint error
-      return res.status(409).json({ error: 'Phone number already registered' });
-    }
+    // if (err.code === '23505') { // Unique constraint error
+    //   return res.status(409).json({ error: 'Phone number already registered' });
+    // }
     
     res.status(500).json({ error: 'Internal server error' });
   }
