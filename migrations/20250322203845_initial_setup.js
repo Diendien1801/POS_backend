@@ -37,7 +37,7 @@ exports.up = async function(knex) {
 
         // Bảng Inventory (Kho hàng)
         .createTable("Inventory", (table) => {
-            table.increments("idKho").primary();
+            table.integer("idKho").unsigned().notNullable();
             table.integer("idLaptop").unsigned().notNullable()
                 .references("idLaptop").inTable("Laptop").onDelete("CASCADE");
             table.integer("soLuong").notNullable();
