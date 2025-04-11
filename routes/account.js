@@ -1,22 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const accountController = require('../controller/account');
+const { authorizeRole } = require('../middleware/auth');
 
+router.post('/login', accountController.login);
 
-// GET /api/accounts
-router.get('/', accountController.getAllAccounts);
+// ✅ Chỉ admin mới được truy cập
+router.get('/', authorizeRole('admin'), accountController.getAllAccounts);
 
-// GET /api/accounts/:id
-router.get('/:id', accountController.getAccountById);
-
-// POST /api/accounts
-router.post('/', accountController.createAccount);
-
-// PUT /api/accounts/:id
-router.put('/:id', accountController.updateAccount);
-
-// DELETE /api/accounts/:id
-router.delete('/:id', accountController.deleteAccount);
+// ✅ Những route khác
+router.get('/:id', authorizeRole('admin', 'casher', 'warehouse'), accountController.getAccountById);
+router.put('/:id', authorizeRole('admin'), accountController.updateAccount);
+router.delete('/:id', authorizeRole('admin'), accountController.deleteAccount);
 
 
 module.exports = router;

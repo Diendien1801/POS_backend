@@ -1,5 +1,6 @@
 const knex = require('knex');
 const config = require('./knexfile');
+require('dotenv').config();
 
 // Use the development environment by default
 const environment = process.env.NODE_ENV || 'development';

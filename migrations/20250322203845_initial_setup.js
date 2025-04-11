@@ -104,7 +104,6 @@ exports.up = async function(knex) {
             table.increments("idPromotion").primary();
             table.string("tenKhuyenMai").notNullable();
             table.string("moTa");
-            table.integer("diemDoi").notNullable();
             table.integer("giaTriGiam").notNullable();
             table.date("ngayBatDau").notNullable();
             table.date("ngayKetThuc").notNullable();
