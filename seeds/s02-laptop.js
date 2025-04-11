@@ -37,7 +37,8 @@ exports.seed = async function (knex) {
       thongSoVatLy: "1.2kg, 14.8mm thickness",
       heDieuHanh: "Windows 11 Pro",
       baoMat: "Fingerprint reader, TPM 2.0",
-      hinhAnh: "dell_xps_13.jpg"
+      hinhAnh:
+        "https://res.cloudinary.com/de5bnr44z/image/upload/v1744117358/dell_xp_13_ybpc6u.jpg",
     },
     {
       idLaptop: 2,
@@ -59,7 +60,8 @@ exports.seed = async function (knex) {
       thongSoVatLy: "1.6kg, 15.5mm thickness",
       heDieuHanh: "macOS Ventura",
       baoMat: "Touch ID, Secure Enclave",
-      hinhAnh: "macbook_pro_14.jpg"
+      hinhAnh:
+        "https://res.cloudinary.com/de5bnr44z/image/upload/v1744117356/mac_book_14_v80nh2.jpg",
     },
     {
       idLaptop: 3,
@@ -81,7 +83,8 @@ exports.seed = async function (knex) {
       thongSoVatLy: "2.3kg, 27.2mm thickness",
       heDieuHanh: "Windows 11 Home",
       baoMat: "Kensington lock",
-      hinhAnh: "asus_rog_strix_g15.jpg"
+      hinhAnh:
+        "https://res.cloudinary.com/de5bnr44z/image/upload/v1744117353/asus_kfgces.jpg",
     },
     {
       idLaptop: 4,
@@ -103,7 +106,8 @@ exports.seed = async function (knex) {
       thongSoVatLy: "1.4kg, 17mm thickness",
       heDieuHanh: "Windows 11 Pro",
       baoMat: "Fingerprint reader, IR camera for Windows Hello",
-      hinhAnh: "hp_spectre_x360.jpg"
+      hinhAnh:
+        "https://res.cloudinary.com/de5bnr44z/image/upload/v1744117349/spectre_t04zh2.jpg",
     },
   ]);
   

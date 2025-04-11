@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 const cors = require("cors");
+const axios = require("axios");
 
 // Middleware
 app.use(express.json());
@@ -23,6 +24,7 @@ const stockImportDetailRouter = require("./routes/stockImportDetail");
 const orderRouter = require("./routes/order");
 const orderDetailRouter = require("./routes/orderDetail");
 const employeeRouter = require("./routes/employee");
+const momoRoutes = require("./routes/momoRoute");
 const inventoryRouter = require("./routes/inventory");
 
 app.use("/api/customers", customerRouter);
@@ -37,6 +39,7 @@ app.use("/api/order-details", orderDetailRouter);
 app.use("/api/employees", employeeRouter);
 app.use("/api/inventory", inventoryRouter);
 
+app.use("/api/payment", momoRoutes);
 // Add more routes for other entities
 // Example: app.use('/api/manufacturers', require('./routes/manufacturer'));
 

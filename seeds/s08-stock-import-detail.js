@@ -13,28 +13,28 @@ exports.seed = async function (knex) {
       idStockImportDetail: 1,
       idPhieuNhap: 1,
       idLaptop: 1,
-      soLuong: 3,
+      soLuong: 1000,
       giaNhap: 15000000
     },
     {
       idStockImportDetail: 2,
       idPhieuNhap: 2,
       idLaptop: 2,
-      soLuong: 2,
+      soLuong: 10,
       giaNhap: 32500000
     },
     {
       idStockImportDetail: 3,
       idPhieuNhap: 3,
       idLaptop: 3,
-      soLuong: 1,
+      soLuong: 1000,
       giaNhap: 30000000
     },
     {
       idStockImportDetail: 4,
       idPhieuNhap: 1,
       idLaptop: 3,
-      soLuong: 1,
+      soLuong: 10,
       giaNhap: 30000000
     }
   ]);
