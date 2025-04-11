@@ -1,63 +1,65 @@
-const db = require('../db');
+const db = require("../db");
 
 // Get all customers
 const getAllCustomers = async (req, res) => {
   try {
-    const customers = await db('Customer').select('*');
+    const customers = await db("Customer").select("*");
     res.json(customers);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 // Get customer by ID
 const getCustomerById = async (req, res) => {
   try {
-    const customer = await db('Customer')
+    const customer = await db("Customer")
       .where({ idCustomer: req.params.id })
       .first();
-      
+
     if (!customer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
-    
+
     res.json(customer);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Create new customer
 const createCustomer = async (req, res) => {
   try {
     const { hoTen, SDT, diemThuong, idLevel } = req.body;
-    
+
     if (!hoTen || !SDT) {
-      return res.status(400).json({ error: 'Name and phone number are required' });
+      return res
+        .status(400)
+        .json({ error: "Name and phone number are required" });
     }
-    
-    const [id] = await db('Customer').insert({
+
+    // Lấy id lớn nhất hiện tại
+    const maxIdResult = await db("Customer").max("idCustomer as maxId").first();
+    const nextId = (maxIdResult?.maxId || 0) + 1;
+
+    // Thêm khách hàng với id cụ thể
+    await db("Customer").insert({
+      idCustomer: nextId,
       hoTen,
       SDT,
       diemThuong: diemThuong || 0,
-      idLevel
-    }).returning('idCustomer');
-    
-    const newCustomer = await db('Customer')
-      .where({ idCustomer: id })
+      idLevel,
+    });
+
+    const newCustomer = await db("Customer")
+      .where({ idCustomer: nextId })
       .first();
-      
+
     res.status(201).json(newCustomer);
   } catch (err) {
     console.error(err);
-    
-    if (err.code === '23505') { // Unique constraint error
-      return res.status(409).json({ error: 'Phone number already registered' });
-    }
-    
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -65,46 +67,46 @@ const createCustomer = async (req, res) => {
 const updateCustomer = async (req, res) => {
   try {
     const { hoTen, SDT, diemThuong, idLevel } = req.body;
-    
-    const updated = await db('Customer')
+
+    const updated = await db("Customer")
       .where({ idCustomer: req.params.id })
       .update({
         hoTen,
         SDT,
         diemThuong,
-        idLevel
+        idLevel,
       });
-      
+
     if (!updated) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
-    
-    const customer = await db('Customer')
+
+    const customer = await db("Customer")
       .where({ idCustomer: req.params.id })
       .first();
-      
+
     res.json(customer);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 // Delete customer
 const deleteCustomer = async (req, res) => {
   try {
-    const deleted = await db('Customer')
+    const deleted = await db("Customer")
       .where({ idCustomer: req.params.id })
       .del();
-      
+
     if (!deleted) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.status(404).json({ error: "Customer not found" });
     }
-    
+
     res.status(204).send();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -114,5 +116,5 @@ module.exports = {
   getCustomerById,
   createCustomer,
   updateCustomer,
-  deleteCustomer
+  deleteCustomer,
 };

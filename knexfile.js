@@ -1,16 +1,16 @@
 require('dotenv').config();
 module.exports = {
   development: {
-    client: 'postgresql',
+    client: "postgresql",
     connection: {
-      host: process.env.DB_HOST || 'localhost', 
-      database: process.env.POSTGRES_DB,
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
+      host: process.env.DB_HOST || "localhost",
+      database: "myshop",
+      user: "postgres",
+      password: "1234",
       port: process.env.POSTGRES_PORT || 5432,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
-  }
-}
+      tableName: "knex_migrations",
+    },
+  },
+};

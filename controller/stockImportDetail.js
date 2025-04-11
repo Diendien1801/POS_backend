@@ -33,29 +33,30 @@ const getAllStockImportDetails = async (req, res) => {
   }
 };
 
-// Get stock import detail by ID
+// Get stock import detail by ID ( stock import ID )
 const getStockImportDetailById = async (req, res) => {
   try {
-    const detail = await db('StockImportDetail')
+    const details = await db('StockImportDetail')
       .join('Laptop', 'StockImportDetail.idLaptop', '=', 'Laptop.idLaptop')
       .join('StockImport', 'StockImportDetail.idPhieuNhap', '=', 'StockImport.idPhieuNhap')
-      .where({ 'StockImportDetail.idStockImportDetail': req.params.id })
+      .where({ 'StockImportDetail.idPhieuNhap': req.params.id })
       .select(
         'StockImportDetail.*', 
         'Laptop.tenLaptop', 
         'StockImport.ngayNhap'
-      )
-      .first();
+      );
       
-    if (!detail) {
-      return res.status(404).json({ error: 'Stock import detail not found' });
+    if (!details || details.length === 0) {
+      return res.status(404).json({ error: 'No stock import details found for this import ID' });
     }
     
-    // Convert numeric values
-    detail.soLuong = Number(detail.soLuong);
-    detail.giaNhap = Number(detail.giaNhap);
+    const formattedDetails = details.map(detail => ({
+      ...detail,
+      soLuong: Number(detail.soLuong),
+      giaNhap: Number(detail.giaNhap)
+    }));
     
-    res.json(detail);
+    res.json(formattedDetails);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
