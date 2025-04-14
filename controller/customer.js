@@ -31,7 +31,7 @@ const getCustomerById = async (req, res) => {
 
 const createCustomer = async (req, res) => {
   try {
-    const { hoTen, SDT, diemThuong, idLevel } = req.body;
+    const { hoTen, SDT, diemThuong = 0 } = req.body;
 
     if (!hoTen || !SDT) {
       return res
@@ -39,16 +39,27 @@ const createCustomer = async (req, res) => {
         .json({ error: "Name and phone number are required" });
     }
 
-    // Lấy id lớn nhất hiện tại
+    // Tìm cấp độ phù hợp theo điểm thưởng
+    let idLevel = null;
+    const matchedLevel = await db("MemberLevel")
+      .where("diemCanDat", "<=", diemThuong)
+      .orderBy("diemCanDat", "desc")
+      .first();
+
+    if (matchedLevel) {
+      idLevel = matchedLevel.idLevel;
+    }
+
+    // Lấy id mới
     const maxIdResult = await db("Customer").max("idCustomer as maxId").first();
     const nextId = (maxIdResult?.maxId || 0) + 1;
 
-    // Thêm khách hàng với id cụ thể
+    // Thêm khách hàng mới
     await db("Customer").insert({
       idCustomer: nextId,
       hoTen,
       SDT,
-      diemThuong: diemThuong || 0,
+      diemThuong,
       idLevel,
     });
 
@@ -63,10 +74,24 @@ const createCustomer = async (req, res) => {
   }
 };
 
+
 // Update customer
 const updateCustomer = async (req, res) => {
   try {
-    const { hoTen, SDT, diemThuong, idLevel } = req.body;
+    const { hoTen, SDT, diemThuong } = req.body;
+
+    // Tự động xác định idLevel theo diemThuong
+    let idLevel = null;
+    if (typeof diemThuong === "number") {
+      const matchedLevel = await db("MemberLevel")
+        .where("diemCanDat", "<=", diemThuong)
+        .orderBy("diemCanDat", "desc")
+        .first();
+
+      if (matchedLevel) {
+        idLevel = matchedLevel.idLevel;
+      }
+    }
 
     const updated = await db("Customer")
       .where({ idCustomer: req.params.id })
@@ -91,6 +116,7 @@ const updateCustomer = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 // Delete customer
 const deleteCustomer = async (req, res) => {

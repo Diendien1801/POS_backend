@@ -78,9 +78,41 @@ const getDailySale = async (req, res) => {
     });
   }
 };
+const getLaptopLowStock = async (req, res) => {
+
+  try {
+    // Lấy danh sách laptop có số lượng tồn kho thấp hơn 5
+    const lowStockLaptops = await knex("Inventory")
+      .join("Laptop", "Inventory.idLaptop", "=", "Laptop.idLaptop")
+      .where("Inventory.soLuong", "<", 5)
+      .select(
+        "Laptop.idLaptop",
+        "Laptop.tenLaptop",
+        "Laptop.hinhAnh",
+        "Laptop.gia",
+
+        "Inventory.soLuong",
+        "Inventory.idKho"
+      );
+
+    return res.status(200).json({
+      success: true,
+      data: lowStockLaptops,
+      message: "Lấy danh sách laptop tồn kho thấp thành công!",
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách laptop tồn kho thấp:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi, vui lòng thử lại!",
+      data: null,
+    });
+  }
+}
 
 module.exports = {
   getLaptopSaleToday,
 getMonthlyRevenue,
 getDailySale,
+getLaptopLowStock,
 };
