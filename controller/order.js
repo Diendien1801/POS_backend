@@ -4,7 +4,7 @@ pointPerCash = 100000; // Example: 1 point per 100,000 VND
 const getAllOrders = async (req, res) => {
   try {
     let query = db("Order")
-      .join("Customer", "Order.idCustomer", "=", "Customer.idCustomer")
+      .leftJoin("Customer", "Order.idCustomer", "=", "Customer.idCustomer")
       .leftJoin("Employee", "Order.idEmployee", "=", "Employee.idNhanVien")
       .leftJoin("Promotion", "Order.idPromotion", "=", "Promotion.idPromotion")
       .select(
@@ -51,7 +51,7 @@ const getOrderById = async (req, res) => {
   try {
     // Get order info
     const order = await db("Order")
-      .join("Customer", "Order.idCustomer", "=", "Customer.idCustomer")
+      .leftJoin("Customer", "Order.idCustomer", "=", "Customer.idCustomer")
       .leftJoin("Employee", "Order.idEmployee", "=", "Employee.idNhanVien")
       .leftJoin("Promotion", "Order.idPromotion", "=", "Promotion.idPromotion")
       .where({ "Order.idOrder": req.params.id })
