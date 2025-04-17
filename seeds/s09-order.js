@@ -1,6 +1,60 @@
+
 /**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
+ * @param {{ import("knex").Knex }} knex
+ * @returns {{ Promise<void> }}
  */
-exports.seed = async function(knex) {
-}
+exports.seed = async function (knex) {
+  await knex("Order").del();
+  await knex("Order").insert([
+    { idOrder: 1, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-12", tongTien: 47800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 2, idCustomer: 3, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-14", tongTien: 11900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 3, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-13", tongTien: 46000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 4, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-28", tongTien: 36000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 5, idCustomer: 3, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-11", tongTien: 30000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 6, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-24", tongTien: 33900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 7, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-09", tongTien: 64000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 8, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-30", tongTien: 99800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 9, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-29", tongTien: 89790000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 10, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-04", tongTien: 33000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 11, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-26", tongTien: 86000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 12, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-18", tongTien: 23900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 13, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-21", tongTien: 79000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 14, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-27", tongTien: 63900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 15, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-08", tongTien: 128000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 16, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-21", tongTien: 20900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 17, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-08", tongTien: 70000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 18, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-14", tongTien: 59000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 19, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-06", tongTien: 32000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 20, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-10", tongTien: 46000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 21, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-15", tongTien: 75000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 22, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-03", tongTien: 23900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 23, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-27", tongTien: 58000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 24, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-11", tongTien: 42000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 25, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-12", tongTien: 16000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 26, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-05", tongTien: 124800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 27, idCustomer: 3, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-06", tongTien: 88000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 28, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-12", tongTien: 119000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 29, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-17", tongTien: 97880000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 30, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-11", tongTien: 76000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 31, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-09", tongTien: 16980000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 32, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-12", tongTien: 65490000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 33, idCustomer: 3, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-13", tongTien: 61900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 34, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-05", tongTien: 8490000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 35, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-09", tongTien: 102000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 36, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-26", tongTien: 71800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 37, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-09", tongTien: 7990000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 38, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-03", tongTien: 164000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 39, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-21", tongTien: 8000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 40, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-10", tongTien: 105800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 41, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-14", tongTien: 136600000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 42, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-15", tongTien: 111000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 43, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-20", tongTien: 73900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 44, idCustomer: 6, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-29", tongTien: 76000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 45, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-07", tongTien: 85800000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 46, idCustomer: 4, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-10", tongTien: 51000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 47, idCustomer: 3, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-13", tongTien: 86000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 48, idCustomer: 5, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-29", tongTien: 20000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 49, idCustomer: 2, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-04-02", tongTien: 22000000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+    { idOrder: 50, idCustomer: 1, idEmployee: null, trangThai: "Hoàn thành", ngayDatHang: "2025-03-02", tongTien: 41900000, hinhThucThanhToan: "cash", idPromotion: null, platform: "pos" },
+  ]);
+};
