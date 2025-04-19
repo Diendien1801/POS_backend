@@ -32,7 +32,7 @@ exports.up = async function(knex) {
             table.string("thongSoVatLy");
             table.string("heDieuHanh");
             table.string("baoMat");
-            table.string("hinhAnh").defaultTo("laptop_default.jpg");
+            table.text("hinhAnh").defaultTo("laptop_default.jpg");
         })
 
         // Bảng Inventory (Kho hàng)

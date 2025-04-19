@@ -1,5 +1,5 @@
 const db = require("../db");
-pointPerCash = 100000; // Example: 1 point per 100,000 VND
+pointPerCash = 1000; // Example: 1 point per 1,000 VND
 // Get all orders with optional filtering
 const getAllOrders = async (req, res) => {
   try {
@@ -199,7 +199,7 @@ const createOrder = async (req, res) => {
     }
 
     // Tính điểm
-    if (trangThai === "Hoàn thành") {
+    if (trangThai === "Hoàn Thành") {
       const pointsToAdd = Math.floor(tongTien / pointPerCash);
       await updateCustomerLoyalty(trx, idCustomer, pointsToAdd, newIdOrder);
     }
