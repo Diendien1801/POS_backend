@@ -265,12 +265,140 @@ const parseIdParam = (idParam) => {
   return parseInt(id, 10);
 };
 
+
+// phân trang product
+const getAllProductWithPagination = async (req, res) => {
+  let page = parseInt(req.query.page) || 1; // Trang hiện tại
+  let limit = parseInt(req.query.limit) || 8; // Số lượng sản phẩm mỗi trang
+
+  // Kiểm tra để đảm bảo page và limit là số nguyên hợp lệ
+  if (isNaN(page) || page <= 0) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: "Page phải là số nguyên lớn hơn 0",
+    });
+  }
+
+  if (isNaN(limit) || limit <= 0) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: "Limit phải là số nguyên lớn hơn 0",
+    });
+  }
+
+  try {
+    // Truy vấn sản phẩm với phân trang
+    const products = await db("Laptop")
+      .select("*")
+      .orderBy("idLaptop") // Đảm bảo sắp xếp theo idLaptop để phân trang chính xác
+      .limit(limit) // Giới hạn số sản phẩm trên mỗi trang
+      .offset((page - 1) * limit); // Bắt đầu từ sản phẩm nào
+
+    const totalProductsResult = await db("Laptop").count("* as count").first();
+    const totalCount = parseInt(totalProductsResult.count); // Ép kiểu về số nguyên
+    const totalPages = Math.ceil(totalCount / limit); // Tính tổng số trang
+
+    res.json({
+      success: true,
+      data: {
+        products,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalProducts: totalCount,
+        },
+      },
+      message: "Lấy danh sách sản phẩm thành công",
+    });
+  } catch (err) {
+    console.error("LỖI BACKEND:", err);
+    res.status(500).json({
+      success: false,
+      data: null,
+      message: "Đã xảy ra lỗi khi lấy danh sách sản phẩm",
+    });
+  }
+};
+
+
+const getProductByManufacturerIdWithPagination = async (req, res) => {
+  const manufacturerId = req.params.id;
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 8;
+
+  if (isNaN(page) || page <= 0) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: "Page phải là số nguyên lớn hơn 0",
+    });
+  }
+
+  if (isNaN(limit) || limit <= 0) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: "Limit phải là số nguyên lớn hơn 0",
+    });
+  }
+
+  try {
+    // Lấy sản phẩm theo idNhaSanXuat với phân trang
+    const products = await db("Laptop")
+      .where({ idNhaSanXuat: manufacturerId })
+      .orderBy("idLaptop")
+      .limit(limit)
+      .offset((page - 1) * limit);
+
+    // Đếm tổng số sản phẩm của nhà sản xuất này
+    const totalProductsResult = await db("Laptop")
+      .where({ idNhaSanXuat: manufacturerId })
+      .count("* as count")
+      .first();
+
+    const totalCount = parseInt(totalProductsResult.count);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    if (totalCount === 0) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Không tìm thấy sản phẩm nào của nhà sản xuất này",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        products,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalProducts: totalCount,
+        },
+      },
+      message: "Lấy danh sách sản phẩm thành công",
+    });
+  } catch (err) {
+    console.error("LỖI BACKEND:", err);
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: "Đã xảy ra lỗi khi lấy danh sách sản phẩm",
+    });
+  }
+};
+
 // Export all controller functions at the end
 module.exports = {
-  getAllProduct,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  resetSequence,
+    resetSequence,
+    getAllProduct,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    getAllProductWithPagination,
+    getProductByManufacturerIdWithPagination, 
 };

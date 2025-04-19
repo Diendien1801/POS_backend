@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controller/product');
+// phân trang 
+router.get("/pagination", productController.getAllProductWithPagination);
 
 // Middleware to log the request details
 const requestLogger = (req, res, next) => {
@@ -20,12 +22,19 @@ const requestLogger = (req, res, next) => {
 // Apply the middleware to all product routes
 router.use(requestLogger);
 
+// lấy sản phẩm theo id của nhà sản xuất
+router.get(
+  "/manufacturer/:id",
+  productController.getProductByManufacturerIdWithPagination
+);
 // Route definitions
 router.get("/", productController.getAllProduct);
+
 router.get("/:id", productController.getProductById);
 router.post("/", productController.createProduct);
 router.put("/:id", productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
 router.post("/reset-sequences", productController.resetSequence);
+
 
 module.exports = router;
