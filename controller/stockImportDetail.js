@@ -1,5 +1,22 @@
 const db = require('../db');
 
+
+const parseIdParam = (idParam) => {
+  let id = idParam;
+
+  // Check if it's a stringified JSON object
+  if (typeof id === "string" && id.includes("{")) {
+    try {
+      const parsedObj = JSON.parse(id);
+      id = parsedObj.idStockImportDetail;
+    } catch (e) {
+      // If parsing fails, continue with the original value
+    }
+  }
+
+  return parseInt(id, 10);
+};
+
 // Get all stock import details
 const getAllStockImportDetails = async (req, res) => {
   try {
@@ -36,10 +53,11 @@ const getAllStockImportDetails = async (req, res) => {
 // Get stock import detail by ID ( stock import ID )
 const getStockImportDetailById = async (req, res) => {
   try {
+    const detailId = parseIdParam(req.params.id);
     const details = await db('StockImportDetail')
       .join('Laptop', 'StockImportDetail.idLaptop', '=', 'Laptop.idLaptop')
       .join('StockImport', 'StockImportDetail.idPhieuNhap', '=', 'StockImport.idPhieuNhap')
-      .where({ 'StockImportDetail.idPhieuNhap': req.params.id })
+      .where({ 'StockImportDetail.idPhieuNhap': detailId })
       .select(
         'StockImportDetail.*', 
         'Laptop.tenLaptop', 
@@ -72,16 +90,18 @@ const createStockImportDetail = async (req, res) => {
       return res.status(400).json({ error: 'Import ID, laptop ID, quantity and price are required' });
     }
     
-    const [id] = await db('StockImportDetail').insert({
+    // Insert the new detail
+    const result = await db('StockImportDetail').insert({
       idPhieuNhap,
       idLaptop,
       soLuong,
       giaNhap
     }).returning('idStockImportDetail');
     
-    // Update inventory
-    await updateInventory(idLaptop, soLuong);
+    // Extract the ID properly whether it's an object or plain value
+    const id = typeof result[0] === 'object' ? result[0].idStockImportDetail : result[0];
     
+    // Use the extracted numeric ID
     const newDetail = await db('StockImportDetail')
       .where({ idStockImportDetail: id })
       .first();
@@ -92,15 +112,15 @@ const createStockImportDetail = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 // Update stock import detail
 const updateStockImportDetail = async (req, res) => {
   try {
     const { idPhieuNhap, idLaptop, soLuong, giaNhap } = req.body;
     
+    const detailId = parseIdParam(req.params.id);
     // Get the original detail to calculate inventory adjustment
     const originalDetail = await db('StockImportDetail')
-      .where({ idStockImportDetail: req.params.id })
+      .where({ idStockImportDetail: detailId })
       .first();
       
     if (!originalDetail) {
@@ -108,7 +128,7 @@ const updateStockImportDetail = async (req, res) => {
     }
     
     const updated = await db('StockImportDetail')
-      .where({ idStockImportDetail: req.params.id })
+      .where({ idStockImportDetail: detailId })
       .update({
         idPhieuNhap,
         idLaptop,
@@ -130,7 +150,7 @@ const updateStockImportDetail = async (req, res) => {
     }
     
     const detail = await db('StockImportDetail')
-      .where({ idStockImportDetail: req.params.id })
+      .where({ idStockImportDetail: detailId })
       .first();
       
     res.json(detail);
@@ -144,8 +164,9 @@ const updateStockImportDetail = async (req, res) => {
 const deleteStockImportDetail = async (req, res) => {
   try {
     // Get the detail first to update inventory
+    const detailId = parseIdParam(req.params.id);
     const detail = await db('StockImportDetail')
-      .where({ idStockImportDetail: req.params.id })
+      .where({ idStockImportDetail: detailId })
       .first();
       
     if (!detail) {
@@ -153,7 +174,7 @@ const deleteStockImportDetail = async (req, res) => {
     }
     
     const deleted = await db('StockImportDetail')
-      .where({ idStockImportDetail: req.params.id })
+      .where({ idStockImportDetail: detailId })
       .del();
     
     // Update inventory - remove the quantity
@@ -195,10 +216,29 @@ async function updateInventory(idLaptop, quantityChange) {
   }
 }
 
+const resetSequence = async (req, res) => {
+  try {
+    await db.raw("SELECT setval('\"StockImportDetail_idStockImportDetail_seq\"', (SELECT MAX(\"idStockImportDetail\") FROM \"StockImportDetail\"));");
+    
+    res.json({ 
+      success: true,
+      message: 'StockImportDetail sequence has been reset successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: err.message 
+    });
+  }
+};
+
+
 module.exports = {
   getAllStockImportDetails,
   getStockImportDetailById,
   createStockImportDetail,
   updateStockImportDetail,
-  deleteStockImportDetail
+  deleteStockImportDetail,
+  resetSequence
 };
