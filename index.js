@@ -30,6 +30,7 @@ const promotionRouter = require('./routes/promotion');
 const momoRoutes = require("./routes/momoRoute");
 const inventoryRouter = require("./routes/inventory");
 
+
 app.use("/api/customers", customerRouter);
 app.use("/api/manufacturers", manufacturerRouter);
 app.use("/api/products", productRouter);
@@ -43,6 +44,7 @@ app.use("/api/employees", employeeRouter);
 app.use('/api/promotions', promotionRouter);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/payment", momoRoutes);
+
 // Add more routes for other entities
 // Example: app.use('/api/manufacturers', require('./routes/manufacturer'));
 
