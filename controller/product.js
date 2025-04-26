@@ -87,6 +87,7 @@ const createProduct = async (req, res) => {
       thongSoVatLy,
       heDieuHanh,
       baoMat,
+      hinhAnh,
     } = req.body;
 
     if (!tenLaptop || !gia || !idNhaSanXuat) {
@@ -114,6 +115,7 @@ const createProduct = async (req, res) => {
         thongSoVatLy,
         heDieuHanh,
         baoMat,
+        hinhAnh,
       })
       .returning("idLaptop");
 
