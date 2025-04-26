@@ -1,9 +1,11 @@
 const knex = require("../db"); // Import knex config
 const moment = require("moment"); // Import moment để xử lý ngày tháng
+const moment = require("moment-timezone");
 
 const getLaptopSaleToday = async (req, res) => {
   try {
-    const today = moment().format("YYYY-MM-DD");
+    const today = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD");
+    console.log("Giá trị today theo giờ Việt Nam:", today);
 
     const totalSold = await knex("OrderDetail")
       .join("Order", "OrderDetail.idOrder", "=", "Order.idOrder")
@@ -13,7 +15,7 @@ const getLaptopSaleToday = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: totalSold.totalQuantity || 0, // Trả về 0 nếu không có dữ liệu
+      data: totalSold.totalQuantity || 0,
       message: "Lấy tổng số lượng laptop đã bán hôm nay thành công!",
     });
   } catch (error) {
@@ -56,9 +58,17 @@ const getMonthlyRevenue = async (req, res) => {
 
 const getDailySale = async (req, res) => {
   try {
-    const today = moment().format("YYYY-MM-DD");
+    const today = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD");
+    console.log("Giá trị today:", today);
 
-    // Lấy tổng doanh thu hôm nay từ bảng Order
+    // Lấy toàn bộ ngày đặt hàng hôm nay (để debug)
+    const ordersToday = await knex("Order")
+      .select("ngayDatHang", "tongTien")
+      .where("ngayDatHang", today);
+
+    console.log("Danh sách đơn hàng hôm nay:", ordersToday);
+
+    // Lấy tổng doanh thu hôm nay
     const dailySales = await knex("Order")
       .where("ngayDatHang", today)
       .sum("tongTien as dailySales")
@@ -78,6 +88,7 @@ const getDailySale = async (req, res) => {
     });
   }
 };
+
 const getLaptopLowStock = async (req, res) => {
 
   try {
