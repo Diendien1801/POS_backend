@@ -199,7 +199,7 @@ const createOrder = async (req, res) => {
     }
 
     // Tính điểm
-    if (trangThai === "Hoàn Thành") {
+    if (trangThai === "Hoàn Thành" && idCustomer != null) {
       const pointsToAdd = Math.floor(tongTien / pointPerCash);
       await updateCustomerLoyalty(trx, idCustomer, pointsToAdd, newIdOrder);
     }

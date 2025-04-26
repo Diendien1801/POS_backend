@@ -52,7 +52,6 @@ const createEmployee = async (req, res) => {
   try {
     // Extract fields from request body
     const {
-      idNhanVien, // Extract but don't use this
       tenNhanVien,
       tenVaTro,
       CCCD,
@@ -74,8 +73,13 @@ const createEmployee = async (req, res) => {
       });
     }
 
-    // Create an object with only the fields we want to insert
+    // Get the next available ID manually
+    const maxIdResult = await trx("Employee").max("idNhanVien as maxId").first();
+    const nextId = (maxIdResult?.maxId || 0) + 1;
+
+    // Add the ID to the employee data
     const employeeData = {
+      idNhanVien: nextId,
       tenNhanVien,
       tenVaTro,
       CCCD,
@@ -89,19 +93,14 @@ const createEmployee = async (req, res) => {
       hinhAnh: hinhAnh || `employee_${Date.now()}.jpg`,
     };
 
-    // Now insert only the fields we want
-    const result = await trx("Employee")
-      .insert(employeeData)
-      .returning("idNhanVien");
-
-    // Extract the ID value correctly
-    const id = result[0].idNhanVien || result[0];
-
+    // Insert with the explicit ID
+    await trx("Employee").insert(employeeData);
+    
     await trx.commit();
 
     const newEmployee = await db("Employee")
       .leftJoin("Account", "Employee.idAccount", "=", "Account.idAccount")
-      .where({ "Employee.idNhanVien": id })
+      .where({ "Employee.idNhanVien": nextId })
       .select("Employee.*", "Account.username", "Account.role")
       .first();
 
@@ -109,22 +108,7 @@ const createEmployee = async (req, res) => {
   } catch (err) {
     await trx.rollback();
     console.error(err);
-
-    if (err.code === "23505") {
-      if (err.constraint === "Employee_pkey") {
-        return res.status(409).json({ error: "Employee ID already exists" });
-      } else if (err.constraint.includes("CCCD")) {
-        return res
-          .status(409)
-          .json({ error: "Employee ID number (CCCD) already exists" });
-      } else if (err.constraint.includes("sdt")) {
-        return res.status(409).json({ error: "Phone number already exists" });
-      } else if (err.constraint.includes("email")) {
-        return res.status(409).json({ error: "Email already exists" });
-      }
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    // Error handling
   }
 };
 

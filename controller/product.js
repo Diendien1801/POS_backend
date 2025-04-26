@@ -2,21 +2,27 @@ const db = require("../db");
 
 const getAllProduct = async (req, res) => {
   try {
-    // Pagination parameters (still used for fetching)
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+    // Check if pagination parameters are explicitly provided
+    const hasPaginationParams = req.query.page !== undefined || req.query.limit !== undefined;
     
     // Optional sorting
     const sortBy = req.query.sortBy || 'idLaptop';
     const sortOrder = req.query.sortOrder === 'desc' ? 'desc' : 'asc';
     
-    // Get products for current page (keep pagination for database query)
-    const products = await db("Laptop")
-      .select("*")
-      .orderBy(sortBy, sortOrder)
-      .limit(limit)
-      .offset(offset);
+    // Build the query
+    let query = db("Laptop").select("*").orderBy(sortBy, sortOrder);
+    
+    // Apply pagination only if parameters were provided
+    if (hasPaginationParams) {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+      
+      query = query.limit(limit).offset(offset);
+    }
+    
+    // Execute the query
+    const products = await query;
 
     // Format the products
     const formattedProducts = products.map((product) => ({
@@ -24,7 +30,7 @@ const getAllProduct = async (req, res) => {
       gia: product.gia ? Number(product.gia) : product.gia,
     }));
 
-    // Return just the products array like before
+    // Return the products array
     res.json(formattedProducts);
   } catch (err) {
     console.error(err);
@@ -87,6 +93,7 @@ const createProduct = async (req, res) => {
       thongSoVatLy,
       heDieuHanh,
       baoMat,
+      hinhAnh,
     } = req.body;
 
     if (!tenLaptop || !gia || !idNhaSanXuat) {
@@ -114,6 +121,7 @@ const createProduct = async (req, res) => {
         thongSoVatLy,
         heDieuHanh,
         baoMat,
+        hinhAnh,
       })
       .returning("idLaptop");
 

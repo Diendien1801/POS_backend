@@ -1,5 +1,4 @@
 const knex = require("../db"); // Import knex config
-//const moment = require("moment"); // Import moment để xử lý ngày tháng
 const moment = require("moment-timezone");
 
 const getLaptopSaleToday = async (req, res) => {
@@ -95,7 +94,7 @@ const getLaptopLowStock = async (req, res) => {
     // Lấy danh sách laptop có số lượng tồn kho thấp hơn 5
     const lowStockLaptops = await knex("Inventory")
       .join("Laptop", "Inventory.idLaptop", "=", "Laptop.idLaptop")
-      .where("Inventory.soLuong", "<", 5)
+      .where("Inventory.soLuong", "<", 10)
       .select(
         "Laptop.idLaptop",
         "Laptop.tenLaptop",
