@@ -32,8 +32,23 @@ const createPromotion = async (req, res) => {
   }
 
   try {
+    // Get the latest ID from the Promotion table
+    const latestPromotion = await db('Promotion')
+      .max('idPromotion as maxId')
+      .first();
+      
+    const newId = latestPromotion.maxId ? Number(latestPromotion.maxId) + 1 : 1;
+    
+    // Insert with the new ID
     const [newPromotion] = await db('Promotion')
-      .insert({ tenKhuyenMai, moTa, giaTriGiam, ngayBatDau, ngayKetThuc })
+      .insert({ 
+        idPromotion: newId,
+        tenKhuyenMai, 
+        moTa, 
+        giaTriGiam, 
+        ngayBatDau, 
+        ngayKetThuc 
+      })
       .returning('*');
 
     res.status(201).json({
