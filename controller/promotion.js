@@ -35,6 +35,7 @@ const createPromotion = async (req, res) => {
     });
   }
 
+  try {
     // 👉 Lấy id lớn nhất hiện tại
     const [{ maxId }] = await db("Promotion").max("idPromotion as maxId");
     const newId = (maxId || 0) + 1;
