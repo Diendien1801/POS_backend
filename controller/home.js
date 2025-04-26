@@ -1,5 +1,4 @@
 const knex = require("../db"); // Import knex config
-// const moment = require("moment"); // Import moment để xử lý ngày tháng
 const moment = require("moment-timezone");
 
 const getLaptopSaleToday = async (req, res) => {

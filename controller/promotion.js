@@ -1,5 +1,9 @@
 const db = require('../db');
+const axios = require("axios");
+require("dotenv").config();
 
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 // GET /api/promotions
 const getAllPromotions = async (req, res) => {
   try {
@@ -27,41 +31,55 @@ const createPromotion = async (req, res) => {
     return res.status(400).json({
       success: false,
       data: null,
-      message: 'Missing required fields'
+      message: "Missing required fields",
     });
   }
 
-  try {
-    // Get the latest ID from the Promotion table
-    const latestPromotion = await db('Promotion')
-      .max('idPromotion as maxId')
-      .first();
-      
-    const newId = latestPromotion.maxId ? Number(latestPromotion.maxId) + 1 : 1;
-    
-    // Insert with the new ID
-    const [newPromotion] = await db('Promotion')
-      .insert({ 
+    // 👉 Lấy id lớn nhất hiện tại
+    const [{ maxId }] = await db("Promotion").max("idPromotion as maxId");
+    const newId = (maxId || 0) + 1;
+
+    // 👉 Insert promotion mới với id tự tạo
+    const [newPromotion] = await db("Promotion")
+      .insert({
         idPromotion: newId,
-        tenKhuyenMai, 
-        moTa, 
-        giaTriGiam, 
-        ngayBatDau, 
-        ngayKetThuc 
+        tenKhuyenMai,
+        moTa,
+        giaTriGiam,
+        ngayBatDau,
+        ngayKetThuc,
       })
-      .returning('*');
+      .returning("*");
+
+    // 📢 Gửi thông báo Telegram
+    const message =
+      `🎉 Khuyến mãi mới: *${newPromotion.tenKhuyenMai}*\n` +
+      `Giảm giá: *${newPromotion.giaTriGiam}%*\n` +
+      `Nội dung: ${newPromotion.moTa || "Không có mô tả"}\n` +
+      `Bắt đầu từ: ${newPromotion.ngayBatDau}\n` +
+      `Kết thúc vào: ${newPromotion.ngayKetThuc}`;
+
+    await axios.post(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: "Markdown",
+      }
+    );
+
 
     res.status(201).json({
       success: true,
       data: newPromotion,
-      message: 'Promotion created'
+      message: "Promotion created and notification sent",
     });
   } catch (err) {
     console.error("🔥 createPromotion error:", err);
     res.status(500).json({
       success: false,
       data: null,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
